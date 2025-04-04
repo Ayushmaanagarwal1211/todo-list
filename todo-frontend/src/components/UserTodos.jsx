@@ -10,7 +10,7 @@ export default async function UserTodos() {
         return <div>Please log in to view your todos.</div>;
     }
     const token = await getToken()
-    const res = await fetch("http://localhost:5000/todo", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/todo`, {
       method: "GET",
       headers: { "Authorization": `Bearer ${token}`
     },

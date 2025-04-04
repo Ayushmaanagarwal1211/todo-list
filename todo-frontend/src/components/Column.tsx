@@ -43,9 +43,9 @@ function ActionsCell({ row }: { row: { original: Todo } }) {
       setLoader(true);
       const token = await getToken();
       await apiRequest(
-        `http://localhost:5000/todo/${row.original._id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/todo/${row.original._id}`,
         "DELETE",
-        null,
+        {},
         { Authorization: `Bearer ${token}` }
       );
     } catch (error) {
@@ -78,7 +78,7 @@ function StatusCell({ row }: { row: { original: Todo } }) {
       setLoader(true);
       const token = await getToken();
       await apiRequest(
-        `http://localhost:5000/todo/${id}`,
+       `${process.env.NEXT_PUBLIC_API_URL}/todo/${id}`,
         "PUT",
         { status: status === "pending" ? "success" : "pending" },
         { Authorization: `Bearer ${token}` }

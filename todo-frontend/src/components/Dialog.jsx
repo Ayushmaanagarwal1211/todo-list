@@ -68,7 +68,7 @@ export default function TaskDialog({ name, isEdit = false, task = {} }) {
     try {
       setLoader(true);
       const token = await getToken();
-      const url = isEdit ? `http://localhost:5000/todo/${task._id}` : "http://localhost:5000/todo";
+      const url = isEdit ? `${process.env.NEXT_PUBLIC_API_URL}/todo/${task._id}` : `${process.env.NEXT_PUBLIC_API_URL}/todo`;
       const method = isEdit ? "PUT" : "POST";
       await apiRequest(url, method, details, { Authorization: `Bearer ${token}` });
       setIsOpen(false);
