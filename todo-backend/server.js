@@ -16,4 +16,8 @@ app.use('/todo',(req, res, next) => {
     res.setHeader("Cache-Control", "private, max-age=31536000"); // ✅ Allows caching
     next();
   },todoRouter)
+app.get('/',(req,res)=>{
+    console.log("HII")
+    return res.status(200).json({msg:"dsdsdsdsd"})
+})
 app.listen(PORT);
