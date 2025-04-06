@@ -1,5 +1,3 @@
-// import express from "express";
-
 const express = require("express");
 const router = express()
 const Todo = require("../models/todo")
@@ -11,24 +9,10 @@ router.post("/", async (req, res) => {
   
 });
 
-// Get all Todos for a user
 router.get("/", async (req, res) => {
-    // res.setHeader("Cache-Control", "public, max-age=31536000, must-revalidate");
     const todos = await Todo.find({ userId: req.auth.userId });
     res.setHeader("Cache-Control", "private, max-age=60, must-revalidate");
-    res.json({ todos }); // Send your data
-  
-});
-
-// Get a single Todo by ID
-router.get("/:id", async (req, res) => {
-  try {
-    const todo = await Todo.findOne({ _id: req.params.id, userId: req.auth.userId });
-    if (!todo) return res.status(404).json({ message: "Todo not found" });
-    res.status(200).json(todo);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    res.json({ todos }); 
 });
 
 router.put("/:id", async (req, res) => {

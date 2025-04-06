@@ -9,11 +9,10 @@ const cors = require("cors")
 const {todoRouter} = require('./routes/todo');
 app.use(express.json());
 app.use(cors())
-// const { requireAuth } = require('./middleware/authMiddleware');
 app.use(requireAuth())
 
 app.use('/todo',(req, res, next) => {
-    res.setHeader("Cache-Control", "private, max-age=31536000"); // ✅ Allows caching
+    res.setHeader("Cache-Control", "private, max-age=31536000");
     next();
   },todoRouter)
 app.get('/',(req,res)=>{
