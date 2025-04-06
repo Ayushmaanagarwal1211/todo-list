@@ -1,9 +1,7 @@
 import React from 'react'
-import dynamic from 'next/dynamic';
-const DataTable = dynamic(() => import("./DataTable"));
 import { auth } from '@clerk/nextjs/server'
-import {columns} from './Column'
-
+import dynamic from 'next/dynamic';
+const TodosWrapper = dynamic(() => import("./TodosWrapper"));
 export default async function UserTodos() {
     const {userId,getToken} = await auth()
     if (!userId) {
@@ -19,6 +17,6 @@ export default async function UserTodos() {
     let data = await res.json()
     data=  data.todos
    return (
-    <div> <DataTable data={data} columns={columns} /></div>
+    <div><TodosWrapper todos={data}/> </div>
   )
 }

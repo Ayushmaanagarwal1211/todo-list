@@ -8,7 +8,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Context } from "@/context/LoaderContext";
 import { format } from "date-fns";
 import { Button } from "./ui/button";
-import apiRequest from "./apiRequest"; // Ensure correct function import
+import apiRequest from "./custom-components/apiRequest"; 
+import { toast } from "react-toastify";
 
 const Dialog = dynamic(() => import("./Dialog"), { ssr: false });
 
@@ -48,10 +49,10 @@ function ActionsCell({ row }: { row: { original: Todo } }) {
         {},
         { Authorization: `Bearer ${token}` }
       );
+      toast.success("Task Deleted Successfully")
     } catch (error) {
-      console.error("Error deleting task:", error);
-    } finally {
-      setLoader(false);
+      setLoader(false)
+      toast.error(`Error deleting task: ${error}`)
     }
   }, [getToken, row.original._id, setLoader]);
 
@@ -84,9 +85,7 @@ function StatusCell({ row }: { row: { original: Todo } }) {
         { Authorization: `Bearer ${token}` }
       );
     } catch (error) {
-      console.error("Error updating status:", error);
-    } finally {
-      setLoader(false);
+      toast.error(`Error Updating Task ${error}`)
     }
   }, [getToken, id, setLoader, status]);
 
@@ -110,5 +109,5 @@ function DeadlineCell({ row }: { row: { original: Todo } }) {
     [deadline]
   );
 
-  return <div className="font-medium">{formattedDate}</div>;
+  return <div >{formattedDate}</div>;
 }

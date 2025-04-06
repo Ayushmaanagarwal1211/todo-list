@@ -4,6 +4,7 @@ import {
   SignedIn,
   UserButton,
 } from '@clerk/nextjs'
+import {ToastContainer} from 'react-toastify'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import LoaderContext from '../context/LoaderContext'
@@ -41,6 +42,7 @@ export default function RootLayout({
               {children}  
             </LoaderContext>
           </div>
+          <ToastContainer/>
         </body>
       </html>
     </ClerkProvider>

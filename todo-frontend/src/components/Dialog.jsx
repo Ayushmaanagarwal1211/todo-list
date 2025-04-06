@@ -10,19 +10,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 const Dialog = dynamic(() => import("@/components/ui/dialog").then((mod) => mod.Dialog),{ssr : false});
-// const DialogContent = dynamic(() => import("@/components/ui/dialog").then((mod) => mod.DialogContent),{ssr : false});
 const DialogFooter = dynamic(() => import("@/components/ui/dialog").then((mod) => mod.DialogFooter),{ssr : false});
-// const DialogHeader = dynamic(() => import("@/components/ui/dialog").then((mod) => mod.DialogHeader),{ssr : false});
-// const DialogTitle = dynamic(() => import("@/components/ui/dialog").then((mod) => mod.DialogTitle),{ssr : false});
 const DialogTrigger = dynamic(() => import("@/components/ui/dialog").then((mod) => mod.DialogTrigger),{ssr : false});
 const Popover = dynamic(() => import("@/components/ui/popover").then((mod) => mod.Popover),{ssr : false});
 const PopoverContent = dynamic(() => import("@/components/ui/popover").then((mod) => mod.PopoverContent),{ssr : false});
 const PopoverTrigger = dynamic(() => import("@/components/ui/popover").then((mod) => mod.PopoverTrigger),{ssr : false});
 import { cn } from "@/lib/utils";
 import { DialogContent , DialogHeader , DialogTitle} from "@/components/ui/dialog";
-import apiRequest from "./apiRequest";
+import apiRequest from "./custom-components/apiRequest";
 import { Context } from "@/context/LoaderContext";
 import dynamic from "next/dynamic";
+import { toast } from "react-toastify";
 
 export default function TaskDialog({ name, isEdit = false, task = {} }) {
   const { getToken } = useAuth();
@@ -39,16 +37,14 @@ export default function TaskDialog({ name, isEdit = false, task = {} }) {
   });
 
   useEffect(() => {
-    if (isEdit && task) {
       setDetails({
         title: task.title || "",
         description: task.description || "",
         category: task.category || "",
         status: task.status || "pending",
         deadline: task.deadline ? new Date(task.deadline) : null,
-      });
-    }
-  }, [task, isEdit]);
+    })
+  }, [isOpen]);
 
   const handleDetailsChange = useCallback((e) => {
     setDetails((prev) => ({ ...prev, [e.target.id]: e.target.value }));
@@ -61,10 +57,9 @@ export default function TaskDialog({ name, isEdit = false, task = {} }) {
 
   const handleSubmit = useCallback(async () => {
     if (!details.title || !details.description) {
-      alert("Please fill all fields!");
+      toast.error("Please fill all the Fields ")
       return;
     }
-
     try {
       setLoader(true);
       const token = await getToken();
@@ -72,11 +67,11 @@ export default function TaskDialog({ name, isEdit = false, task = {} }) {
       const method = isEdit ? "PUT" : "POST";
       await apiRequest(url, method, details, { Authorization: `Bearer ${token}` });
       setIsOpen(false);
+      toast.success(isEdit ? "Task Updated Successfully" : "Task Added Successfully")
     } catch (error) {
-      console.error("Error submitting task:", error);
-    } finally {
-      setLoader(false);
-    }
+      toast.error(error)
+      setLoader(false)
+    } 
   }, [details, getToken, isEdit, setLoader, task._id]);
 
   return (
