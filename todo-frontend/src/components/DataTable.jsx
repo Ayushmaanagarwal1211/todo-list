@@ -1,5 +1,5 @@
 "use client";
-import React, {  useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -10,6 +10,8 @@ import {
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
+import useDebounce from "./custom-components/useDebounce";
+import { FixedSizeList as List } from "react-window";
 
 const Table = dynamic(
   () => import("@/components/ui/table").then((mod) => mod.Table),
@@ -63,51 +65,83 @@ const DropdownMenuTrigger = dynamic(
 import { Input } from "@/components/ui/input";
 import dynamic from "next/dynamic";
 import { DatePickerWithRange } from "./DateRange";
-import {setFilters,setCurrentPage, fetchPaginatedData} from '../slice/todoSlice'
+import {
+  setFilters,
+  setCurrentPage,
+  fetchPaginatedData,fetchTags
+} from "../slice/todoSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "@clerk/clerk-react";
+const Row = ({ index, style ,data}) => {
+  const { tags, selectedTags, setSelectedTags, filters, dispatch } = data;
 
+  const tag = tags[index];
+  const checked = selectedTags.includes(tag);
 
-export default function DataTable({
-  columns,
-  data,
-}) {
-  const [sorting, setSorting] = React.useState([]);
-  const [columnFilters, setColumnFilters] = React.useState(
-    []
+  return (
+    <DropdownMenuCheckboxItem
+      key={tag}
+      style={style}
+      checked={checked}
+      onCheckedChange={(checked) => {
+        const updated = checked
+          ? [...selectedTags, tag]
+          : selectedTags.filter((t) => t !== tag);
+        setSelectedTags(updated);
+        dispatch(setFilters({ ...filters, tags: updated }));
+      }}
+    >
+      {tag}
+    </DropdownMenuCheckboxItem>
   );
- 
-  const [columnVisibility, setColumnVisibility] =
-    React.useState({});
-    const [rowSelection, setRowSelection] = React.useState({});
-    const [selectedTags, setSelectedTags] = useState([]);
-      const tags = useSelector((state ) => state.todo.tags);
-    const filters = useSelector((state ) => state.todo.filters);
-    const currentPage = useSelector((state) => state.todo.currentPage);
-    const totalPages = useSelector((state) => state.todo.totalPages);
+};
+export default function DataTable({ columns, data }) {
+  const [sorting, setSorting] = React.useState([]);
+  const [columnFilters, setColumnFilters] = React.useState([]);
 
-    
-      const [dateRange, setDateRange] = useState({ from: null, to: null });
-const dispatch  = useDispatch()
-      useEffect(() => {
-        if (dateRange.from && dateRange.to) {
-          dispatch(setFilters({...filters,  from: new Date(dateRange.from).toLocaleDateString(),
-            to: new Date(dateRange.to).toLocaleDateString()}))
-        } else if (!dateRange.from && !dateRange.to) {
-          dispatch(setFilters({...filters,  from: "",
-            to: ""}))
-        }
-      }, [dateRange]);
-      const {getToken} = useAuth()
-      useEffect(()=>{
-        getToken().then((token )=>{
-          dispatch(fetchPaginatedData(token))
+  const [columnVisibility, setColumnVisibility] = React.useState({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [selectedTags, setSelectedTags] = useState([]);
+  const tags = useSelector((state) => state.todo.tags);
+  const filters = useSelector((state) => state.todo.filters);
+  const currentPage = useSelector((state) => state.todo.currentPage);
+  const totalPages = useSelector((state) => state.todo.totalPages);
+  const tasks = useSelector((state) => state.todo.tasks);
+  const isFirstRender = useRef(true);
+  const debouncedTitle = useDebounce(filters.title, 500);
+  const [dateRange, setDateRange] = useState({ from: null, to: null });
+  const dispatch = useDispatch();
+  const [isModalOpen,setIsModalOpen] = useState(true)
+  useLayoutEffect(() => {
+    isFirstRender.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (dateRange.from && dateRange.to) {
+      dispatch(
+        setFilters({
+          ...filters,
+          from: new Date(dateRange.from).toLocaleDateString(),
+          to: new Date(dateRange.to).toLocaleDateString(),
         })
-          
-      },[filters,currentPage])
-      
+      );
+    } else if (!dateRange.from && !dateRange.to) {
+      dispatch(setFilters({ ...filters, from: "", to: "" }));
+    }
+  }, [dateRange]);
+  const { getToken } = useAuth();
+  useEffect(() => {
 
-
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    getToken().then((token) => {
+      dispatch(fetchPaginatedData(token));
+    });
+  }, [
+   debouncedTitle,filters.to,filters.from,filters.categories,filters.tags,currentPage
+  ]);
 
   const table = useReactTable({
     data,
@@ -135,7 +169,7 @@ const dispatch  = useDispatch()
           placeholder="Filter Todos..."
           value={filters.title}
           onChange={(event) => {
-            dispatch(setFilters({...filters, title: event.target.value}))
+            dispatch(setFilters({ ...filters, title: event.target.value }));
           }}
           className="max-w-sm"
         />
@@ -179,9 +213,9 @@ const dispatch  = useDispatch()
                   onCheckedChange={(checked) => {
                     const updated = checked
                       ? [...filters.categories, category]
-                      : filters.categories.filter((c ) => c !== category);
+                      : filters.categories.filter((c) => c !== category);
                     // setFilters((prev) => ({ ...prev, categories: updated }));
-                    dispatch(setFilters({ ...filters, categories: updated }))
+                    dispatch(setFilters({ ...filters, categories: updated }));
                   }}
                 >
                   {category}
@@ -191,79 +225,102 @@ const dispatch  = useDispatch()
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <DropdownMenu>
+        <DropdownMenu onOpenChange={async ()=>{
+          if(isModalOpen){
+            const token = await getToken()
+              dispatch(fetchTags(token))
+          }
+          setIsModalOpen(!isModalOpen)
+
+        }}>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">Filter Tags</Button>
+
+              <Button variant="outline" >Filter Tags</Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="max-h-60 overflow-y-auto">
-            {tags.map((tag) => (
-              <DropdownMenuCheckboxItem
-                key={tag}
-                checked={selectedTags.includes(tag)}
-                onCheckedChange={(checked) => {
-                  const updated = checked
-                    ? [...selectedTags, tag]
-                    : selectedTags.filter((t) => t !== tag);
-                  setSelectedTags(updated);
-                  // setFilters((prev) => ({ ...prev, tags: updated }));
-                  dispatch(setFilters({ ...filters, tags: updated }))
-                }}
-              >
-                {tag}
-              </DropdownMenuCheckboxItem>
-            ))}
+          <DropdownMenuContent  className="p-0">
+            {tags.length ==0 ? <div>No Tags Found</div>:
+           
+              // <DropdownMenuCheckboxItem
+              //   key={tag}
+              //   checked={selectedTags.includes(tag)}
+              //   onCheckedChange={(checked) => {
+              //     const updated = checked
+              //       ? [...selectedTags, tag]
+              //       : selectedTags.filter((t) => t !== tag);
+              //     setSelectedTags(updated);
+              //     dispatch(setFilters({ ...filters, tags: updated }));
+              //   }}
+              // >
+              //   {tag}
+              // </DropdownMenuCheckboxItem>
+<List
+      height={240} // px height of dropdown
+      itemCount={tags.length}
+      itemSize={40} // px per row
+      width="100%"
+
+      itemData={{ tags, selectedTags, setSelectedTags, filters, dispatch }}
+
+    >
+      {Row}
+    </List>
+}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+      <div className="rounded-md border min-h-[100%]">
+        {tasks.length==0 ? (
+          <div>Loading</div>
+        ) : (
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        )}
       </div>
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="text-sm text-muted-foreground">
@@ -273,8 +330,9 @@ const dispatch  = useDispatch()
           <Button
             variant="outline"
             size="sm"
-            onClick={() =>{
-              dispatch(setCurrentPage(Number(currentPage - 1)))}}
+            onClick={() => {
+              dispatch(setCurrentPage(Number(currentPage - 1)));
+            }}
             disabled={currentPage <= 1}
           >
             Previous
@@ -282,8 +340,9 @@ const dispatch  = useDispatch()
           <Button
             variant="outline"
             size="sm"
-            onClick={() =>{
-              dispatch(setCurrentPage(Number(currentPage + 1)))}}
+            onClick={() => {
+              dispatch(setCurrentPage(Number(currentPage + 1)));
+            }}
             disabled={currentPage >= totalPages}
           >
             Next

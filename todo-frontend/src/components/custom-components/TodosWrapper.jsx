@@ -1,13 +1,13 @@
 "use client"
 import React, {  useEffect } from 'react'
-import DataTable from '../DataTable';
+const DataTable = dynamic(() => import('../DataTable'), {
+  ssr: false, // optional if component is client-only
+});
+// const columns = dynamic(()=>import("../Column"),{ssr : false})
 import {columns} from '../Column'
 import { useDispatch,useSelector } from 'react-redux';
-import { setLoader ,setTasks} from '../../slice/todoSlice';
-
-
-
-
+import { setCurrentPage, setTasks, setTotalPages} from '../../slice/todoSlice';
+import dynamic from 'next/dynamic';
 
 export default function TodosWrapper({data}) {
     const tasks = useSelector((state) => state.todo.tasks);
@@ -15,6 +15,8 @@ export default function TodosWrapper({data}) {
 
     useEffect(()=>{
         dispatch(setTasks(data.todos))
+        dispatch(setCurrentPage(data.currentPage))
+        dispatch(setTotalPages(data.totalPages))
     },[data.todos])
 
   return (

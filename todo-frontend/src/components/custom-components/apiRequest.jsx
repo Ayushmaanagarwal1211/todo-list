@@ -18,7 +18,9 @@ export default function useApiRequest() {
         method,
         data: body,
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json",'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache',
+                'Expires': '0',
           ...headers,
         },
       });
