@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/(auth)/sign-in/[[...sign-in]]/page.jsx", "src/middleware.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/(auth)/sign-in/[[...sign-in]]/page.jsx", "src/middleware.js", "src/components/DateRange.jsx"],
   "exclude": ["node_modules"]
 }

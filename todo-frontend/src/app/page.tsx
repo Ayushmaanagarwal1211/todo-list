@@ -7,8 +7,7 @@ export default function Home() {
       <div className="bg-white shadow-lg rounded-2xl p-8 max-w-md w-full">
         <h1 className="text-3xl font-bold text-gray-900">Welcome to Your To-Do List</h1>
         <p className="text-gray-600 mt-2">Stay organized and track your tasks efficiently.</p>
-
-        <div className="mt-6 flex justify-center gap-4">
+        <div className="mt-6 flex justify-center gap-4 flex-wrap">
           <SignedOut>
             <SignInButton>
               <Button variant="default" className="px-6 py-2 text-lg cursor-pointer">Sign In</Button>

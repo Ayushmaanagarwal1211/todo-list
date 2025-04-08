@@ -5,11 +5,13 @@ import { useContext, useCallback, useMemo } from "react";
 import { useAuth } from "@clerk/nextjs";
 import dynamic from "next/dynamic";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Context } from "@/context/LoaderContext";
+import { Context } from "@/context/Context";
 import { format } from "date-fns";
 import { Button } from "./ui/button";
-import apiRequest from "./custom-components/apiRequest"; 
+import useApiRequest from "./custom-components/apiRequest"; 
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from '@/slice/store'; // Adjust the path if needed
 
 const Dialog = dynamic(() => import("./Dialog"), { ssr: false });
 
@@ -19,6 +21,7 @@ export type Todo = {
   status: "pending" | "success";
   category: string;
   deadline: Date;
+  tags : string[];
   _id: string;
 };
 
@@ -29,21 +32,43 @@ export const columns: ColumnDef<Todo>[] = [
   { accessorKey: "status", header: "Status", cell: StatusCell },
   { accessorKey: "deadline", header: "Deadline", cell: DeadlineCell },
   { id: "actions", header: "Actions", cell: ActionsCell },
+  {
+    accessorKey: "tag",
+    header: "Tags",
+    cell: ({ row }) => {
+      const tags: string[] = row.original.tags;
+      if (!tags || tags.length === 0) return <span className="text-muted-foreground">No tags</span>;
+  
+      return (
+        <div className="flex flex-wrap gap-1 max-w-[200px] overflow-y-auto">
+          {tags.map((tag, index) => (
+            <span
+              key={index}
+              className="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      );
+    },
+  },
+  
 ];
 
 function ActionsCell({ row }: { row: { original: Todo } }) {
-  const context = useContext(Context);
+  // const context = useContext(Context);
   const { getToken } = useAuth();
-  
-  if (!context) throw new Error("Context not available");
+  const makeRequest = useApiRequest()
+  // if (!context) throw new Error("Context not available");
 
-  const { setLoader } = context;
+  // const { setLoader } = context;
 
-  const handleDeleteTask = useCallback(async () => {
+  const handleDeleteTask = async () => {
     try {
-      setLoader(true);
+      // setLoader(true);
       const token = await getToken();
-      await apiRequest(
+      await makeRequest(
         `${process.env.NEXT_PUBLIC_API_URL}/todo/${row.original._id}`,
         "DELETE",
         {},
@@ -51,10 +76,10 @@ function ActionsCell({ row }: { row: { original: Todo } }) {
       );
       toast.success("Task Deleted Successfully")
     } catch (error) {
-      setLoader(false)
+      // setLoader(false)
       toast.error(`Error deleting task: ${error}`)
     }
-  }, [getToken, row.original._id, setLoader]);
+  };
 
   return (
     <div className="flex gap-2">
@@ -66,28 +91,31 @@ function ActionsCell({ row }: { row: { original: Todo } }) {
 
 function StatusCell({ row }: { row: { original: Todo } }) {
   const { getToken } = useAuth();
-  const context = useContext(Context);
+  // const context = useContext(Context);
 
-  if (!context) throw new Error("Context not available");
+  // if (!context) throw new Error("Context not available");
 
-  const { setLoader } = context;
+  const dispatch : AppDispatch = useDispatch()
+  // const { setLoader } = context;
   const id = row.original._id;
   const status: "pending" | "success" = row.original.status;
+  const makeRequest = useApiRequest()
 
   const handleStatusChange = useCallback(async () => {
     try {
-      setLoader(true);
+      // setLoader(true);
       const token = await getToken();
-      await apiRequest(
+      await makeRequest(
        `${process.env.NEXT_PUBLIC_API_URL}/todo/${id}`,
         "PUT",
         { status: status === "pending" ? "success" : "pending" },
         { Authorization: `Bearer ${token}` }
       );
+      // dispatch(fetchPaginatedData())
     } catch (error) {
       toast.error(`Error Updating Task ${error}`)
     }
-  }, [getToken, id, setLoader, status]);
+  }, [getToken, id, status]);
 
   return (
     <div className="font-medium">

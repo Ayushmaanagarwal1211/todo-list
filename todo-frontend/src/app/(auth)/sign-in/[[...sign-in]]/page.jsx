@@ -6,7 +6,7 @@ import { useSignIn } from "@clerk/clerk-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Lock, Globe } from "lucide-react";
-import { Context } from "@/context/LoaderContext"; 
+import { Context } from "@/context/Context"; 
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 

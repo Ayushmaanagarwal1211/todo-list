@@ -18,31 +18,34 @@ const PopoverTrigger = dynamic(() => import("@/components/ui/popover").then((mod
 import { cn } from "@/lib/utils";
 import { DialogContent , DialogHeader , DialogTitle} from "@/components/ui/dialog";
 import apiRequest from "./custom-components/apiRequest";
-import { Context } from "@/context/LoaderContext";
+import { Context } from "@/context/Context";
 import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
 
 export default function TaskDialog({ name, isEdit = false, task = {} }) {
   const { getToken } = useAuth();
-  const { setLoader } = useContext(Context);
+  // const { setLoader } = useContext(Context);
   const [isOpen, setIsOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  
+  const [tagValue,setTagValue] = useState('')
+  const makeRequest = apiRequest()
   const [details, setDetails] = useState({
     title: "",
     description: "",
-    category: "",
+    category: "work",
     status: "pending",
     deadline: null,
+    tags : []
   });
 
   useEffect(() => {
       setDetails({
         title: task.title || "",
         description: task.description || "",
-        category: task.category || "",
+        category: task.category || "work",
         status: task.status || "pending",
         deadline: task.deadline ? new Date(task.deadline) : null,
+        tags : task.tags || []
     })
   }, [isOpen]);
 
@@ -61,18 +64,18 @@ export default function TaskDialog({ name, isEdit = false, task = {} }) {
       return;
     }
     try {
-      setLoader(true);
+      // setLoader(true);
       const token = await getToken();
       const url = isEdit ? `${process.env.NEXT_PUBLIC_API_URL}/todo/${task._id}` : `${process.env.NEXT_PUBLIC_API_URL}/todo`;
       const method = isEdit ? "PUT" : "POST";
-      await apiRequest(url, method, details, { Authorization: `Bearer ${token}` });
+      await makeRequest(url, method, details, { Authorization: `Bearer ${token}` });
       setIsOpen(false);
       toast.success(isEdit ? "Task Updated Successfully" : "Task Added Successfully")
     } catch (error) {
       toast.error(error)
-      setLoader(false)
+      // setLoader(false)
     } 
-  }, [details, getToken, isEdit, setLoader, task._id]);
+  }, [details, getToken, isEdit, task._id]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -86,7 +89,7 @@ export default function TaskDialog({ name, isEdit = false, task = {} }) {
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
-          {["title", "description", "category"].map((field) => (
+          {["title", "description"].map((field) => (
             <div key={field} className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor={field} className="text-right capitalize">
                 {field}
@@ -94,6 +97,56 @@ export default function TaskDialog({ name, isEdit = false, task = {} }) {
               <Input id={field} value={details[field]} onChange={handleDetailsChange} className="col-span-3" />
             </div>
           ))}
+<div className="grid grid-cols-4 items-center gap-4">
+  <Label htmlFor="category" className="text-right">
+    Category
+  </Label>
+  <select
+    id="category"
+    value={details.category}
+    onChange={handleDetailsChange}
+    className="col-span-3 border rounded px-3 py-2 bg-background"
+  >
+    <option value="work">Work</option>
+    <option value="personal">Personal</option>
+    <option value="study">Study</option>
+    <option value="shopping">Shopping</option>
+    <option value="other">Other</option>
+  </select>
+</div>
+
+<div className="grid grid-cols-4 items-center gap-4">
+  <Label htmlFor="tag" className="text-right">
+    Tags
+  </Label>
+  <Input
+    id="tags"
+    placeholder="Comma separated (e.g., urgent,frontend)"
+    value={tagValue}
+    onChange={(e)=>{
+      const value = e.target.value
+      if(value[value.length-1]==","){
+        setDetails(prev=>({...prev, tags : [...prev.tags, value.substring(0,value.length-1)]}))
+        setTagValue('')
+      }else{
+        setTagValue(value)
+      }
+    }}
+    className="col-span-3"
+/>
+</div>
+<div className="flex flex-wrap w-[100%] gap-2">
+      {details.tags?.map((tag, index) => (
+        <span
+          key={index}
+          className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground"
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+
+
 
           <div className="grid grid-cols-4 items-center gap-4">
             <Label className="text-right">Deadline</Label>

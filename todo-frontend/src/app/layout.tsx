@@ -7,7 +7,8 @@ import {
 import {ToastContainer} from 'react-toastify'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
-import LoaderContext from '../context/LoaderContext'
+import ReduxWrapper from '../components/custom-components/ReduxWrapper'
+import Context from '../context/Context'
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -38,9 +39,9 @@ export default function RootLayout({
             </SignedIn>
           </header>
           <div className=' md:p-20 sm:p-10 max-sm:p-5'>
-            <LoaderContext>
-              {children}  
-            </LoaderContext>
+            <ReduxWrapper>
+              {children}
+            </ReduxWrapper>
           </div>
           <ToastContainer/>
         </body>

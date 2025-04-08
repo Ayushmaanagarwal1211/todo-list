@@ -15,8 +15,10 @@ export default async function UserTodos() {
       next: { tags: ["todos"] }, 
     });
     let data = await res.json()
-    data=  data.todos
+    const tags = Array.from(
+      new Set(data.todos.flatMap((item) => item.tags || []))
+    );
    return (
-    <div><TodosWrapper todos={data}/> </div>
+    <div><TodosWrapper data={data} tags={tags} token={token}/> </div>
   )
 }
