@@ -8,7 +8,6 @@ export const fetchPaginatedData = createAsyncThunk(
   async (token, { getState, rejectWithValue }) => {
     const state = getState();
     const { currentPage, filters } = state.todo;
-    console.log(token,"TOKLEN")
     try {
         const response = await axios.get(
             `${process.env.NEXT_PUBLIC_API_URL}/todo?page=${currentPage}`,
@@ -42,6 +41,7 @@ const initialState = {
     loader: false,
     tasks: [],
     tags : [],
+    totalPages : 1,
     currentPage: 1,
     filters: {
       from: "",
@@ -62,6 +62,7 @@ export const todoSlice = createSlice({
       state.tasks = action.payload;
     },
     setCurrentPage: (state, action) => {
+
       state.currentPage = action.payload;
     },
     setFilters: (state, action) => {
@@ -77,9 +78,9 @@ export const todoSlice = createSlice({
         
           state.tasks = action.payload.todos.todos;
           state.loader = false;
-          console.log(action.payload)
+          state.totalPages = action.payload.todos.totalPages
           state.tags  = action.payload.tags.tags
-        state.currentPage = action.payload.currentPage;
+        state.currentPage = action.payload.todos.currentPage;
       })
       .addCase(fetchPaginatedData.rejected, (state) => {
         state.loader = false;

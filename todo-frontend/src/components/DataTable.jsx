@@ -71,7 +71,6 @@ import { useAuth } from "@clerk/clerk-react";
 export default function DataTable({
   columns,
   data,
-  totalPages,
 }) {
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState(
@@ -83,11 +82,10 @@ export default function DataTable({
     const [rowSelection, setRowSelection] = React.useState({});
     const [selectedTags, setSelectedTags] = useState([]);
       const tags = useSelector((state ) => state.todo.tags);
-      console.log(tags)
     const filters = useSelector((state ) => state.todo.filters);
     const currentPage = useSelector((state) => state.todo.currentPage);
+    const totalPages = useSelector((state) => state.todo.totalPages);
 
-    // const {   setCurrentPage} = context;
     
       const [dateRange, setDateRange] = useState({ from: null, to: null });
 const dispatch  = useDispatch()
@@ -275,7 +273,8 @@ const dispatch  = useDispatch()
           <Button
             variant="outline"
             size="sm"
-            onClick={() => dispatch(setCurrentPage(currentPage - 1))}
+            onClick={() =>{
+              dispatch(setCurrentPage(Number(currentPage - 1)))}}
             disabled={currentPage <= 1}
           >
             Previous
@@ -283,7 +282,8 @@ const dispatch  = useDispatch()
           <Button
             variant="outline"
             size="sm"
-            onClick={() => dispatch(setCurrentPage(currentPage+1))}
+            onClick={() =>{
+              dispatch(setCurrentPage(Number(currentPage + 1)))}}
             disabled={currentPage >= totalPages}
           >
             Next

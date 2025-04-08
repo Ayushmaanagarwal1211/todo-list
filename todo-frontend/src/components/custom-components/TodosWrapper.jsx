@@ -20,7 +20,6 @@ export default function TodosWrapper({data}) {
   return (
     <div><DataTable 
     data={tasks} 
-    totalPages={data.totalPages}
     columns={columns} /></div>
   )
 }
