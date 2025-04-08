@@ -2,7 +2,6 @@
 import React, {  useEffect } from 'react'
 import DataTable from '../DataTable';
 import {columns} from '../Column'
-import { toast } from 'react-toastify';
 import { useDispatch,useSelector } from 'react-redux';
 import { setLoader ,setTasks} from '../../slice/todoSlice';
 

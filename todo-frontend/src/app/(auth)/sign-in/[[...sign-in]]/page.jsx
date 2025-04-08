@@ -1,15 +1,15 @@
 "use client";
 
-import { useReducer, useCallback, useContext } from "react";
+import { useReducer, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSignIn } from "@clerk/clerk-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Lock, Globe } from "lucide-react";
-import { Context } from "@/context/Context"; 
+// import { Context } from "@/context/Context"; 
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
-
+import { setLoader } from "@/slice/todoSlice";
 const initialState = {
   email: "",
   password: "",
@@ -29,7 +29,7 @@ const reducer = (state, action) => {
 
 const AuthPage = () => {
   const { signIn, isLoaded: signInLoaded, setActive } = useSignIn();
-  const { setLoader } = useContext(Context);
+  // const { setLoader } = useContext(Context);
   const router = useRouter();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { email, password } = state;

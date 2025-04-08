@@ -1,17 +1,14 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { useContext, useCallback, useMemo } from "react";
+import {  useMemo } from "react";
 import { useAuth } from "@clerk/nextjs";
 import dynamic from "next/dynamic";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Context } from "@/context/Context";
 import { format } from "date-fns";
 import { Button } from "./ui/button";
 import useApiRequest from "./custom-components/apiRequest"; 
 import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from '@/slice/store'; // Adjust the path if needed
 
 const Dialog = dynamic(() => import("./Dialog"), { ssr: false });
 
@@ -95,13 +92,12 @@ function StatusCell({ row }: { row: { original: Todo } }) {
 
   // if (!context) throw new Error("Context not available");
 
-  const dispatch : AppDispatch = useDispatch()
   // const { setLoader } = context;
   const id = row.original._id;
   const status: "pending" | "success" = row.original.status;
   const makeRequest = useApiRequest()
 
-  const handleStatusChange = useCallback(async () => {
+  const handleStatusChange = async () => {
     try {
       // setLoader(true);
       const token = await getToken();
@@ -115,7 +111,7 @@ function StatusCell({ row }: { row: { original: Todo } }) {
     } catch (error) {
       toast.error(`Error Updating Task ${error}`)
     }
-  }, [getToken, id, status]);
+  }
 
   return (
     <div className="font-medium">

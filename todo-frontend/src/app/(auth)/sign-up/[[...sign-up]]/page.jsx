@@ -1,21 +1,20 @@
 "use client";
 
-import { useState, useCallback, useContext } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSignIn, useSignUp ,useClerk} from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Lock, Globe } from "lucide-react";
-import { Context } from "@/context/Context";
+// import { Context } from "@/context/Context";
 import { toast } from "react-toastify";
-
+import { setLoader } from "@/slice/todoSlice";
 const AuthPage = () => {
   const { signIn, isLoaded: signInLoaded } = useSignIn();
   const { signUp, isLoaded: signUpLoaded } = useSignUp();
   const {client} = useClerk()
    const router = useRouter();
-  const {setLoader} = useContext(Context)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");

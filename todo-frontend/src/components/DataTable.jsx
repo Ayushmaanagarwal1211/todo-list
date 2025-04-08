@@ -1,10 +1,6 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -68,42 +64,34 @@ const DropdownMenuTrigger = dynamic(
 import { Input } from "@/components/ui/input";
 import dynamic from "next/dynamic";
 import { DatePickerWithRange } from "./DateRange";
-import { Context } from "@/context/Context";
 import {setFilters,setCurrentPage, fetchPaginatedData} from '../slice/todoSlice'
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "@clerk/clerk-react";
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number, filters: { from: String; to: String }) => void;
-  tags: string[];
-}
 
-export default function DataTable<TData, TValue>({
+
+export default function DataTable({
   columns,
   data,
   totalPages,
   tags,
-}: DataTableProps<TData, TValue>) {
+}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+  const [columnFilters, setColumnFilters] = React.useState(
     []
   );
 
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState({});
     const [rowSelection, setRowSelection] = React.useState({});
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [selectedTags, setSelectedTags] = useState([]);
     
-    const filters = useSelector((state : any) => state.todo.filters);
-    const currentPage = useSelector((state: any) => state.todo.currentPage);
+    const filters = useSelector((state ) => state.todo.filters);
+    const currentPage = useSelector((state) => state.todo.currentPage);
 
     // const {   setCurrentPage} = context;
 
       const [dateRange, setDateRange] = useState({ from: null, to: null });
-const dispatch  : AppDispatch = useDispatch()
+const dispatch  = useDispatch()
       useEffect(() => {
         if (dateRange.from && dateRange.to) {
           // setFilters(prev => ({
@@ -111,8 +99,8 @@ const dispatch  : AppDispatch = useDispatch()
             // from: new Date(dateRange.from!).toLocaleDateString(),
             // to: new Date(dateRange.to!).toLocaleDateString(),
           // }));
-          dispatch(setFilters({...filters,  from: new Date(dateRange.from!).toLocaleDateString(),
-            to: new Date(dateRange.to!).toLocaleDateString()}))
+          dispatch(setFilters({...filters,  from: new Date(dateRange.from).toLocaleDateString(),
+            to: new Date(dateRange.to).toLocaleDateString()}))
         } else if (!dateRange.from && !dateRange.to) {
           dispatch(setFilters({...filters,  from: "",
             to: ""}))
@@ -120,7 +108,7 @@ const dispatch  : AppDispatch = useDispatch()
       }, [dateRange]);
       const {getToken} = useAuth()
       useEffect(()=>{
-        getToken().then((token : any)=>{
+        getToken().then((token )=>{
           dispatch(fetchPaginatedData(token))
         })
           
@@ -202,7 +190,7 @@ const dispatch  : AppDispatch = useDispatch()
                   onCheckedChange={(checked) => {
                     const updated = checked
                       ? [...filters.categories, category]
-                      : filters.categories.filter((c : any) => c !== category);
+                      : filters.categories.filter((c ) => c !== category);
                     // setFilters((prev) => ({ ...prev, categories: updated }));
                     dispatch(setFilters({ ...filters, categories: updated }))
                   }}

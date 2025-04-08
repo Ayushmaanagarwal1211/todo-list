@@ -8,7 +8,6 @@ import {ToastContainer} from 'react-toastify'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import ReduxWrapper from '../components/custom-components/ReduxWrapper'
-import Context from '../context/Context'
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
