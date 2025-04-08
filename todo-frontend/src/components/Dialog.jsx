@@ -23,7 +23,6 @@ import { toast } from "react-toastify";
 
 export default function TaskDialog({ name, isEdit = false, task = {} }) {
   const { getToken } = useAuth();
-  // const { setLoader } = useContext(Context);
   const [isOpen, setIsOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [tagValue,setTagValue] = useState('')
@@ -63,7 +62,6 @@ export default function TaskDialog({ name, isEdit = false, task = {} }) {
       return;
     }
     try {
-      // setLoader(true);
       const token = await getToken();
       const url = isEdit ? `${process.env.NEXT_PUBLIC_API_URL}/todo/${task._id}` : `${process.env.NEXT_PUBLIC_API_URL}/todo`;
       const method = isEdit ? "PUT" : "POST";
@@ -72,7 +70,6 @@ export default function TaskDialog({ name, isEdit = false, task = {} }) {
       toast.success(isEdit ? "Task Updated Successfully" : "Task Added Successfully")
     } catch (error) {
       toast.error(error)
-      // setLoader(false)
     } 
   }, [details, getToken, isEdit, task._id]);
 

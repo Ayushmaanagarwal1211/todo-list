@@ -3,10 +3,6 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-
-
-
-// Async thunk to fetch tasks
 export const fetchPaginatedData = createAsyncThunk(
   "todo/fetchPaginatedData",
   async (token, { getState, rejectWithValue }) => {
@@ -19,7 +15,6 @@ export const fetchPaginatedData = createAsyncThunk(
             {
               headers: {
                 "Authorization": `Bearer ${token}`,
-                // "Content-Type": "application/json",
                 "filters": JSON.stringify(filters),
               },
             }
@@ -68,8 +63,8 @@ export const todoSlice = createSlice({
         state.loader = true;
       })
       .addCase(fetchPaginatedData.fulfilled, (state, action) => {
-        state.loader = false;
-        state.tasks = action.payload.todos;
+          state.tasks = action.payload.todos;
+          state.loader = false;
         state.currentPage = action.payload.currentPage;
       })
       .addCase(fetchPaginatedData.rejected, (state) => {

@@ -10,7 +10,6 @@ import {
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import { AppDispatch } from '@/slice/store'; // Adjust the path if needed
 
 const Table = dynamic(
   () => import("@/components/ui/table").then((mod) => mod.Table),
@@ -94,11 +93,6 @@ export default function DataTable({
 const dispatch  = useDispatch()
       useEffect(() => {
         if (dateRange.from && dateRange.to) {
-          // setFilters(prev => ({
-          //   ...prev,
-            // from: new Date(dateRange.from!).toLocaleDateString(),
-            // to: new Date(dateRange.to!).toLocaleDateString(),
-          // }));
           dispatch(setFilters({...filters,  from: new Date(dateRange.from).toLocaleDateString(),
             to: new Date(dateRange.to).toLocaleDateString()}))
         } else if (!dateRange.from && !dateRange.to) {
@@ -143,10 +137,7 @@ const dispatch  = useDispatch()
           placeholder="Filter Todos..."
           value={filters.title}
           onChange={(event) => {
-            // setFilters({ ...filters, title: event.target.value });
             dispatch(setFilters({...filters, title: event.target.value}))
-            // table.getColumn("title")?.setFilterValue(event.target.value)
-            // setTitle(event.target.value)
           }}
           className="max-w-sm"
         />

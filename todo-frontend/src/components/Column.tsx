@@ -54,16 +54,10 @@ export const columns: ColumnDef<Todo>[] = [
 ];
 
 function ActionsCell({ row }: { row: { original: Todo } }) {
-  // const context = useContext(Context);
   const { getToken } = useAuth();
   const makeRequest = useApiRequest()
-  // if (!context) throw new Error("Context not available");
-
-  // const { setLoader } = context;
-
   const handleDeleteTask = async () => {
     try {
-      // setLoader(true);
       const token = await getToken();
       await makeRequest(
         `${process.env.NEXT_PUBLIC_API_URL}/todo/${row.original._id}`,
@@ -73,7 +67,6 @@ function ActionsCell({ row }: { row: { original: Todo } }) {
       );
       toast.success("Task Deleted Successfully")
     } catch (error) {
-      // setLoader(false)
       toast.error(`Error deleting task: ${error}`)
     }
   };
@@ -88,18 +81,12 @@ function ActionsCell({ row }: { row: { original: Todo } }) {
 
 function StatusCell({ row }: { row: { original: Todo } }) {
   const { getToken } = useAuth();
-  // const context = useContext(Context);
-
-  // if (!context) throw new Error("Context not available");
-
-  // const { setLoader } = context;
   const id = row.original._id;
   const status: "pending" | "success" = row.original.status;
   const makeRequest = useApiRequest()
 
   const handleStatusChange = async () => {
     try {
-      // setLoader(true);
       const token = await getToken();
       await makeRequest(
        `${process.env.NEXT_PUBLIC_API_URL}/todo/${id}`,
@@ -107,7 +94,6 @@ function StatusCell({ row }: { row: { original: Todo } }) {
         { status: status === "pending" ? "success" : "pending" },
         { Authorization: `Bearer ${token}` }
       );
-      // dispatch(fetchPaginatedData())
     } catch (error) {
       toast.error(`Error Updating Task ${error}`)
     }

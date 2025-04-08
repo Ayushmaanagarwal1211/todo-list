@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React from 'react'
 import {useSelector} from 'react-redux'
 export default function Loader() {
     const loader = useSelector(state=>state.todo.loader)

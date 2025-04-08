@@ -1,9 +1,9 @@
-// hooks/useApiRequest.ts
 "use client";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setLoader, fetchPaginatedData } from "@/slice/todoSlice";
 import { useAuth } from "@clerk/clerk-react";
+import { toast } from "react-toastify";
 
 export default function useApiRequest() {
   const dispatch = useDispatch();
@@ -12,7 +12,7 @@ export default function useApiRequest() {
   return async (url, method, body, headers) => {
     const token = await getToken()
     try {
-      dispatch(setLoader(true));
+        dispatch(setLoader(true));
       await axios({
         url,
         method,
@@ -24,9 +24,8 @@ export default function useApiRequest() {
       });
       dispatch(fetchPaginatedData(token));
     } catch (err) {
-      console.error("API Request failed:", err);
-    } finally {
-      dispatch(setLoader(false));
-    }
+      toast.error(`API Request Failed : ${err}`)
+      setLoader(false)
+    } 
   };
 }
