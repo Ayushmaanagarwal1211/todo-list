@@ -84,7 +84,6 @@ router.get("/", async (req, res) => {
       Todo.countDocuments(filters),
     ]);
 
-    res.setHeader("Cache-Control", "private, max-age=60, must-revalidate");
     res.json({
       todos,
       total,
