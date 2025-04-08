@@ -6,9 +6,6 @@ const isProtectedRoute = createRouteMatcher(['/todo(.*)'])
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) await auth.protect()
     const res = NextResponse.next();
-    if (req.url.includes("/todo")) {
-      res.headers.set("Cache-Control", "private, max-age=300, must-revalidate");
-    }
     return res
 })
 

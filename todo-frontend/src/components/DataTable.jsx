@@ -72,23 +72,23 @@ export default function DataTable({
   columns,
   data,
   totalPages,
-  tags,
 }) {
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState(
     []
   );
-
+ 
   const [columnVisibility, setColumnVisibility] =
     React.useState({});
     const [rowSelection, setRowSelection] = React.useState({});
     const [selectedTags, setSelectedTags] = useState([]);
-    
+      const tags = useSelector((state ) => state.todo.tags);
+      console.log(tags)
     const filters = useSelector((state ) => state.todo.filters);
     const currentPage = useSelector((state) => state.todo.currentPage);
 
     // const {   setCurrentPage} = context;
-
+    
       const [dateRange, setDateRange] = useState({ from: null, to: null });
 const dispatch  = useDispatch()
       useEffect(() => {
@@ -106,7 +106,7 @@ const dispatch  = useDispatch()
           dispatch(fetchPaginatedData(token))
         })
           
-      },[filters])
+      },[filters,currentPage])
       
 
 

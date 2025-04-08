@@ -9,9 +9,10 @@ import { setLoader ,setTasks} from '../../slice/todoSlice';
 
 
 
-export default function TodosWrapper({data,tags}) {
+export default function TodosWrapper({data}) {
     const tasks = useSelector((state) => state.todo.tasks);
     const dispatch = useDispatch()
+
     useEffect(()=>{
         dispatch(setTasks(data.todos))
     },[data.todos])
@@ -19,7 +20,6 @@ export default function TodosWrapper({data,tags}) {
   return (
     <div><DataTable 
     data={tasks} 
-    tags={tags} 
     totalPages={data.totalPages}
     columns={columns} /></div>
   )

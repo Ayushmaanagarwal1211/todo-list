@@ -8,17 +8,14 @@ export default async function UserTodos() {
         return <div>Please log in to view your todos.</div>;
     }
     const token = await getToken()
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/todo`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/todo?page=1`, {
       method: "GET",
       headers: { "Authorization": `Bearer ${token}`
     },
-      next: { tags: ["todos"] }, 
-    });
+    cache: 'no-store',});
     let data = await res.json()
-    const tags = Array.from(
-      new Set(data.todos.flatMap((item) => item.tags || []))
-    );
+    
    return (
-    <div><TodosWrapper data={data} tags={tags} token={token}/> </div>
+    <div><TodosWrapper data={data}  token={token}/> </div>
   )
 }

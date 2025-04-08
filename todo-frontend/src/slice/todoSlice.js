@@ -19,8 +19,18 @@ export const fetchPaginatedData = createAsyncThunk(
               },
             }
           );
-    
-          return response.data;
+
+
+          const tags = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_URL}/todo/tags/all`,
+            {
+              headers: {
+                "Authorization": `Bearer ${token}`,
+              },
+            }
+          );
+
+          return {todos : response.data , tags : tags.data};
     } catch (err) {
       toast.error(`Failed to fetch data: ${err}`);
       return rejectWithValue(err.message);
@@ -31,6 +41,7 @@ export const fetchPaginatedData = createAsyncThunk(
 const initialState = {
     loader: false,
     tasks: [],
+    tags : [],
     currentPage: 1,
     filters: {
       from: "",
@@ -63,8 +74,11 @@ export const todoSlice = createSlice({
         state.loader = true;
       })
       .addCase(fetchPaginatedData.fulfilled, (state, action) => {
-          state.tasks = action.payload.todos;
+        
+          state.tasks = action.payload.todos.todos;
           state.loader = false;
+          console.log(action.payload)
+          state.tags  = action.payload.tags.tags
         state.currentPage = action.payload.currentPage;
       })
       .addCase(fetchPaginatedData.rejected, (state) => {
