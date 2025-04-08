@@ -75,7 +75,7 @@ export default function DataTable({
   totalPages,
   tags,
 }) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState(
     []
   );
