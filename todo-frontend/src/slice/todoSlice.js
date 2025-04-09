@@ -23,18 +23,6 @@ export const fetchPaginatedData = createAsyncThunk(
               },
             }
           );
-
-          // const tags = await axios.get(
-          //   `${process.env.NEXT_PUBLIC_API_URL}/todo/tags/all`,
-          //   {
-          //     headers: {
-          //       Authorization: `Bearer ${token}`,
-          //       'Cache-Control': 'no-cache',
-          //       'Pragma': 'no-cache',
-          //       'Expires': '0'
-          //     },
-          //   }
-          // );
           return {todos : response.data };
     } catch (err) {
       toast.error(`Failed to fetch data: ${err}`);
@@ -54,7 +42,6 @@ export async function fetchTagsAPI(token){
       },
     }
   );
-  console.log(tags)
   return tags.data
 }
 

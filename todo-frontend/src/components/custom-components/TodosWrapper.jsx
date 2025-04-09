@@ -1,9 +1,8 @@
 "use client"
 import React, {  useEffect } from 'react'
 const DataTable = dynamic(() => import('../DataTable'), {
-  ssr: false, // optional if component is client-only
+  ssr: false,
 });
-// const columns = dynamic(()=>import("../Column"),{ssr : false})
 import {columns} from '../Column'
 import { useDispatch,useSelector } from 'react-redux';
 import { setCurrentPage, setTasks, setTotalPages} from '../../slice/todoSlice';

@@ -214,7 +214,6 @@ export default function DataTable({ columns, data }) {
                     const updated = checked
                       ? [...filters.categories, category]
                       : filters.categories.filter((c) => c !== category);
-                    // setFilters((prev) => ({ ...prev, categories: updated }));
                     dispatch(setFilters({ ...filters, categories: updated }));
                   }}
                 >
@@ -239,24 +238,10 @@ export default function DataTable({ columns, data }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent  className="p-0">
             {tags.length ==0 ? <div>No Tags Found</div>:
-           
-              // <DropdownMenuCheckboxItem
-              //   key={tag}
-              //   checked={selectedTags.includes(tag)}
-              //   onCheckedChange={(checked) => {
-              //     const updated = checked
-              //       ? [...selectedTags, tag]
-              //       : selectedTags.filter((t) => t !== tag);
-              //     setSelectedTags(updated);
-              //     dispatch(setFilters({ ...filters, tags: updated }));
-              //   }}
-              // >
-              //   {tag}
-              // </DropdownMenuCheckboxItem>
 <List
-      height={240} // px height of dropdown
+      height={240} 
       itemCount={tags.length}
-      itemSize={40} // px per row
+      itemSize={40} 
       width="100%"
 
       itemData={{ tags, selectedTags, setSelectedTags, filters, dispatch }}
